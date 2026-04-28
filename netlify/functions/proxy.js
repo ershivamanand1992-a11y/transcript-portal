@@ -11,14 +11,14 @@ exports.handler = async function(event) {
     };
   }
 
-  const WEBHOOK = 'https://igniteipa1.nextgen.blueprism.com/regions/us-east/api/workflows/v1/webhooks/JB8H3znP9JwTycSI5kYN6/sync';
+  const WEBHOOK = 'https://igniteipa1.nextgen.blueprism.com/regions/us-east/api/workflows/v1/webhooks/JB8H3znP9JwTycSI5kYN6/test';
 
   try {
     const response = await fetch(WEBHOOK, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': 'ignite-secret-123'
+        'x-api-key': 'Bearer ignite-secret-123'
       },
       body: event.body
     });
