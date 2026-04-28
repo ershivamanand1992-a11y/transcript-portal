@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Call Transcript Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f6f3; --surface: #ffffff; --surface-2: #f2f1ee;
+      --border: rgba(0,0,0,0.1); --border-md: rgba(0,0,0,0.18);
+      --text-primary: #1a1916; --text-secondary: #6b6a66; --text-tertiary: #9e9d99;
+      --accent: #1a1916;
+      --success-bg: #eaf3de; --success-text: #3b6d11; --success-border: rgba(59,109,17,0.25);
+      --info-bg: #e6f1fb; --info-text: #185fa5;
+      --danger-bg: #fcebeb; --danger-text: #a32d2d; --danger-border: rgba(163,45,45,0.25);
+      --radius: 12px; --radius-sm: 8px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #141413; --surface: #1e1e1c; --surface-2: #272725;
+        --border: rgba(255,255,255,0.1); --border-md: rgba(255,255,255,0.18);
+        --text-primary: #f0efe9; --text-secondary: #9e9d99; --text-tertiary: #6b6a66;
+        --accent: #f0efe9;
+        --success-bg: #173404; --success-text: #c0dd97; --success-border: rgba(192,221,151,0.2);
+        --info-bg: #042c53; --info-text: #85b7eb;
+        --danger-bg: #501313; --danger-text: #f09595; --danger-border: rgba(240,149,149,0.2);
+      }
+    }
+    html, body { min-height: 100vh; background: var(--bg); font-family: 'DM Sans', system-ui, sans-serif; color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+    body { display: flex; flex-direction: column; align-items: center; padding: 3rem 1rem 4rem; animation: pagein 0.4s ease both; }
+    @keyframes pagein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .wrap { width: 100%; max-width: 580px; }
+    .page-header { margin-bottom: 2.5rem; }
+    .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--text-tertiary); }
+    h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.5px; color: var(--text-primary); line-height: 1.2; }
+    h1 strong { font-weight: 500; }
+    .page-header p { margin-top: 8px; font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1rem; }
+    .field { margin-bottom: 1.25rem; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 7px; }
+    .text-input { width: 100%; padding: 10px 14px; border: 0.5px solid var(--border-md); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; background: var(--surface-2); color: var(--text-primary); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .text-input::placeholder { color: var(--text-tertiary); }
+    .text-input:focus { border-color: var(--text-secondary); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+    .drop-zone { border: 1.5px dashed var(--border-md); border-radius: var(--radius); padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface-2); position: relative; user-select: none; }
+    .drop-zone:hover { border-color: var(--text-secondary); }
+    .drop-zone.drag-over { border-color: var(--info-text); background: var(--info-bg); }
+    .drop-zone.has-file { border-style: solid; border-color: var(--success-border); background: var(--success-bg); }
+    .drop-icon { width: 36px; height: 36px; margin: 0 auto 12px; color: var(--text-tertiary); }
+    .drop-zone.has-file .drop-icon { color: var(--success-text); }
+    .drop-label { font-size: 14px; color: var(--text-secondary); }
+    .drop-label a { color: var(--info-text); text-decoration: none; }
+    .drop-hint { font-size: 12px; color: var(--text-tertiary); margin-top: 5px; }
+    .file-chosen { display: none; margin-top: 10px; font-size: 13px; font-family: 'DM Mono', monospace; color: var(--success-text); word-break: break-all; }
+    .drop-zone.has-file .file-chosen { display: block; }
+    .drop-zone.has-file .drop-label, .drop-zone.has-file .drop-hint { display: none; }
+    #file-input { display: none; }
+    .btn-primary { width: 100%; padding: 12px; background: var(--accent); color: var(--bg); border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s, transform 0.1s; margin-top: 1.25rem; letter-spacing: 0.2px; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.82; }
+    .btn-primary:active:not(:disabled) { transform: scale(0.99); }
+    .btn-primary:disabled { opacity: 0.28; cursor: not-allowed; }
+    .status-card { display: none; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+    .status-row { display: flex; align-items: center; gap: 12px; }
+    .spinner { width: 18px; height: 18px; flex-shrink: 0; border: 1.5px solid var(--border-md); border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status-label { font-size: 14px; color: var(--text-secondary); }
+    .error-card { display: none; background: var(--danger-bg); border: 0.5px solid var(--danger-border); border-radius: var(--radius); padding: 1rem 1.25rem; }
+    .error-card p { font-size: 13px; color: var(--danger-text); line-height: 1.6; }
+    .result-section { display: none; }
+    .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+    .badge { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.3px; }
+    .badge-success { background: var(--success-bg); color: var(--success-text); border: 0.5px solid var(--success-border); }
+    .result-meta { font-size: 12px; color: var(--text-tertiary); font-family: 'DM Mono', monospace; }
+    .divider { height: 0.5px; background: var(--border); margin: 1.25rem 0; }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
+    .summary-text { font-size: 15px; color: var(--text-primary); line-height: 1.8; white-space: pre-wrap; }
+    .reset-btn { background: none; border: none; font-size: 13px; color: var(--text-tertiary); cursor: pointer; font-family: inherit; padding: 0; transition: color 0.15s; }
+    .reset-btn:hover { color: var(--text-primary); }
+    .page-footer { margin-top: 3rem; font-size: 12px; color: var(--text-tertiary); text-align: center; }
+    @media (max-width: 480px) { body { padding: 2rem 0.75rem 3rem; } h1 { font-size: 22px; } .card { padding: 1.25rem; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page-header">
+      <div class="eyebrow">Ignite IPA</div>
+      <h1>Call Transcript<br><strong>Summary Portal</strong></h1>
+      <p>Upload a call transcript and receive an AI-generated summary powered by your Blue Prism workflow.</p>
+    </header>
+    <div id="upload-section">
+      <div class="card">
+        <div class="field">
+          <label class="field-label" for="user-name">Your name</label>
+          <input class="text-input" type="text" id="user-name" placeholder="e.g. Sarah Johnson" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label class="field-label">Transcript file</label>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" role="button" tabindex="0">
+            <svg class="drop-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 25H9.5a7 7 0 010-14H11M24 25h2.5a7 7 0 000-14H25M18 30V14M13 19l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p class="drop-label">Drop file here or <a onclick="event.stopPropagation(); document.getElementById('file-input').click();">browse</a></p>
+            <p class="drop-hint">PDF, DOCX, DOC, TXT accepted</p>
+            <p class="file-chosen" id="file-chosen-name"></p>
+          </div>
+          <input type="file" id="file-input" accept=".pdf,.docx,.doc,.txt" />
+        </div>
+        <button class="btn-primary" id="submit-btn" disabled onclick="submitTranscript()">Send for summarisation</button>
+      </div>
+      <div class="status-card" id="status-card">
+        <div class="status-row">
+          <div class="spinner"></div>
+          <span class="status-label" id="status-text">Sending transcript to workflow…</span>
+        </div>
+      </div>
+      <div class="error-card" id="error-card">
+        <p id="error-text"></p>
+      </div>
+    </div>
+    <div class="result-section" id="result-section">
+      <div class="card">
+        <div class="result-header">
+          <span class="badge badge-success">Summary ready</span>
+          <span class="result-meta" id="result-meta"></span>
+        </div>
+        <div class="divider"></div>
+        <p class="section-label">Call summary</p>
+        <p class="summary-text" id="summary-body"></p>
+        <div class="divider"></div>
+        <button class="reset-btn" onclick="resetPortal()">↩ Upload another transcript</button>
+      </div>
+    </div>
+    <footer class="page-footer">Powered by Blue Prism · Ignite IPA</footer>
+  </div>
+  <script>
+    const PROXY_URL = '/.netlify/functions/proxy';
+    let selectedFile = null;
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileChosenName = document.getElementById('file-chosen-name');
+    const submitBtn = document.getElementById('submit-btn');
+    fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+    dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', (e) => { if (!dropZone.contains(e.relatedTarget)) dropZone.classList.remove('drag-over'); });
+    dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+    document.getElementById('user-name').addEventListener('input', checkReady);
+    function handleFile(file) { selectedFile = file; dropZone.classList.add('has-file'); fileChosenName.textContent = file.name; checkReady(); }
+    function checkReady() { submitBtn.disabled = !(document.getElementById('user-name').value.trim() && selectedFile); }
+    async function submitTranscript() {
+      const name = document.getElementById('user-name').value.trim();
+      if (!name || !selectedFile) return;
+      submitBtn.disabled = true;
+      showStatus('Sending transcript to workflow…');
+      try {
+        const base64 = await toBase64(selectedFile);
+        const payload = { userName: name, fileName: selectedFile.name, fileType: selectedFile.type || 'application/octet-stream', fileSize: selectedFile.size, fileContent: base64, submittedAt: new Date().toISOString() };
+        const response = await fetch(PROXY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!response.ok) throw new Error('Request failed with status ' + response.status);
+        let data = null;
+        try { data = await response.json(); } catch (_) {}
+        const summary = data && (data.summary || data.result || data.output);
+        if (summary) { showResult(name, selectedFile.name, summary); }
+        else { showStatus('Transcript received — waiting for summary from your workflow…'); }
+      } catch (err) { showError('Something went wrong: ' + err.message); submitBtn.disabled = false; }
+    }
+    function showStatus(msg) { document.getElementById('status-card').style.display = 'block'; document.getElementById('status-text').textContent = msg; document.getElementById('error-card').style.display = 'none'; }
+    function showError(msg) { document.getElementById('status-card').style.display = 'none'; document.getElementById('error-card').style.display = 'block'; document.getElementById('error-text').textContent = msg; }
+    function showResult(name, filename, summary) {
+      document.getElementById('status-card').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'none';
+      const rs = document.getElementById('result-section');
+      rs.style.display = 'block'; rs.style.animation = 'pagein 0.35s ease both';
+      document.getElementById('result-meta').textContent = name + ' · ' + filename;
+      document.getElementById('summary-body').textContent = summary;
+    }
+    function resetPortal() {
+      selectedFile = null; fileInput.value = ''; document.getElementById('user-name').value = '';
+      dropZone.classList.remove('has-file'); fileChosenName.textContent = ''; submitBtn.disabled = true;
+      document.getElementById('result-section').style.display = 'none';
+      document.getElementById('status-card').style.display = 'none';
+      document.getElementById('error-card').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'block';
+    }
+    function toBase64(file) {
+      return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = () => rej(new Error('File read failed')); r.readAsDataURL(file); });
+    }
+  </script>
+</body>
+</html>
