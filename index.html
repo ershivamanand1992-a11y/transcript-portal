@@ -32,7 +32,7 @@
     html, body { min-height: 100vh; background: var(--bg); font-family: 'DM Sans', system-ui, sans-serif; color: var(--text-primary); -webkit-font-smoothing: antialiased; }
     body { display: flex; flex-direction: column; align-items: center; padding: 3rem 1rem 4rem; animation: pagein 0.4s ease both; }
     @keyframes pagein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .wrap { width: 100%; max-width: 580px; }
+    .wrap { width: 100%; max-width: 620px; }
     .page-header { margin-bottom: 2.5rem; }
     .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
     .eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--text-tertiary); }
@@ -43,22 +43,14 @@
     .field { margin-bottom: 1.25rem; }
     .field:last-child { margin-bottom: 0; }
     .field-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 7px; }
+    .field-hint { font-size: 12px; color: var(--text-tertiary); margin-top: 5px; }
     .text-input { width: 100%; padding: 10px 14px; border: 0.5px solid var(--border-md); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; background: var(--surface-2); color: var(--text-primary); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
     .text-input::placeholder { color: var(--text-tertiary); }
     .text-input:focus { border-color: var(--text-secondary); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
-    .drop-zone { border: 1.5px dashed var(--border-md); border-radius: var(--radius); padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface-2); position: relative; user-select: none; }
-    .drop-zone:hover { border-color: var(--text-secondary); }
-    .drop-zone.drag-over { border-color: var(--info-text); background: var(--info-bg); }
-    .drop-zone.has-file { border-style: solid; border-color: var(--success-border); background: var(--success-bg); }
-    .drop-icon { width: 36px; height: 36px; margin: 0 auto 12px; color: var(--text-tertiary); }
-    .drop-zone.has-file .drop-icon { color: var(--success-text); }
-    .drop-label { font-size: 14px; color: var(--text-secondary); }
-    .drop-label a { color: var(--info-text); text-decoration: none; }
-    .drop-hint { font-size: 12px; color: var(--text-tertiary); margin-top: 5px; }
-    .file-chosen { display: none; margin-top: 10px; font-size: 13px; font-family: 'DM Mono', monospace; color: var(--success-text); word-break: break-all; }
-    .drop-zone.has-file .file-chosen { display: block; }
-    .drop-zone.has-file .drop-label, .drop-zone.has-file .drop-hint { display: none; }
-    #file-input { display: none; }
+    .textarea { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border-md); border-radius: var(--radius-sm); font-size: 13px; font-family: 'DM Mono', monospace; background: var(--surface-2); color: var(--text-primary); outline: none; transition: border-color 0.15s, box-shadow 0.15s; resize: vertical; min-height: 220px; line-height: 1.6; }
+    .textarea::placeholder { color: var(--text-tertiary); font-family: 'DM Sans', system-ui, sans-serif; }
+    .textarea:focus { border-color: var(--text-secondary); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+    .char-count { font-size: 11px; color: var(--text-tertiary); text-align: right; margin-top: 5px; }
     .btn-primary { width: 100%; padding: 12px; background: var(--accent); color: var(--bg); border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s, transform 0.1s; margin-top: 1.25rem; letter-spacing: 0.2px; }
     .btn-primary:hover:not(:disabled) { opacity: 0.82; }
     .btn-primary:active:not(:disabled) { transform: scale(0.99); }
@@ -89,8 +81,9 @@
     <header class="page-header">
       <div class="eyebrow">Ignite IPA</div>
       <h1>Call Transcript<br><strong>Summary Portal</strong></h1>
-      <p>Upload a call transcript and receive an AI-generated summary powered by your Blue Prism workflow.</p>
+      <p>Paste your call transcript below and receive an AI-generated summary powered by your Blue Prism workflow.</p>
     </header>
+
     <div id="upload-section">
       <div class="card">
         <div class="field">
@@ -98,16 +91,9 @@
           <input class="text-input" type="text" id="user-name" placeholder="e.g. Sarah Johnson" autocomplete="name" />
         </div>
         <div class="field">
-          <label class="field-label">Transcript file</label>
-          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" role="button" tabindex="0">
-            <svg class="drop-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 25H9.5a7 7 0 010-14H11M24 25h2.5a7 7 0 000-14H25M18 30V14M13 19l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <p class="drop-label">Drop file here or <a onclick="event.stopPropagation(); document.getElementById('file-input').click();">browse</a></p>
-            <p class="drop-hint">PDF, DOCX, DOC, TXT accepted</p>
-            <p class="file-chosen" id="file-chosen-name"></p>
-          </div>
-          <input type="file" id="file-input" accept=".pdf,.docx,.doc,.txt" />
+          <label class="field-label" for="transcript-text">Transcript</label>
+          <textarea class="textarea" id="transcript-text" placeholder="Paste your call transcript here..."></textarea>
+          <p class="char-count"><span id="char-count">0</span> characters</p>
         </div>
         <button class="btn-primary" id="submit-btn" disabled onclick="submitTranscript()">Send for summarisation</button>
       </div>
@@ -121,6 +107,7 @@
         <p id="error-text"></p>
       </div>
     </div>
+
     <div class="result-section" id="result-section">
       <div class="card">
         <div class="result-header">
@@ -131,63 +118,100 @@
         <p class="section-label">Call summary</p>
         <p class="summary-text" id="summary-body"></p>
         <div class="divider"></div>
-        <button class="reset-btn" onclick="resetPortal()">↩ Upload another transcript</button>
+        <button class="reset-btn" onclick="resetPortal()">↩ Summarise another transcript</button>
       </div>
     </div>
+
     <footer class="page-footer">Powered by Blue Prism · Ignite IPA</footer>
   </div>
+
   <script>
     const PROXY_URL = '/.netlify/functions/proxy';
-    let selectedFile = null;
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const fileChosenName = document.getElementById('file-chosen-name');
+
+    const nameInput = document.getElementById('user-name');
+    const transcriptInput = document.getElementById('transcript-text');
     const submitBtn = document.getElementById('submit-btn');
-    fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
-    dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-    dropZone.addEventListener('dragleave', (e) => { if (!dropZone.contains(e.relatedTarget)) dropZone.classList.remove('drag-over'); });
-    dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
-    document.getElementById('user-name').addEventListener('input', checkReady);
-    function handleFile(file) { selectedFile = file; dropZone.classList.add('has-file'); fileChosenName.textContent = file.name; checkReady(); }
-    function checkReady() { submitBtn.disabled = !(document.getElementById('user-name').value.trim() && selectedFile); }
+    const charCount = document.getElementById('char-count');
+
+    nameInput.addEventListener('input', checkReady);
+    transcriptInput.addEventListener('input', () => {
+      charCount.textContent = transcriptInput.value.length.toLocaleString();
+      checkReady();
+    });
+
+    function checkReady() {
+      submitBtn.disabled = !(nameInput.value.trim() && transcriptInput.value.trim().length > 10);
+    }
+
     async function submitTranscript() {
-      const name = document.getElementById('user-name').value.trim();
-      if (!name || !selectedFile) return;
+      const name = nameInput.value.trim();
+      const transcript = transcriptInput.value.trim();
+      if (!name || !transcript) return;
+
       submitBtn.disabled = true;
       showStatus('Sending transcript to workflow…');
+
       try {
-        const base64 = await toBase64(selectedFile);
-        const payload = { userName: name, fileName: selectedFile.name, fileType: selectedFile.type || 'application/octet-stream', fileSize: selectedFile.size, fileContent: base64, submittedAt: new Date().toISOString() };
-        const response = await fetch(PROXY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const payload = {
+          userName: name,
+          transcriptText: transcript,
+          submittedAt: new Date().toISOString()
+        };
+
+        const response = await fetch(PROXY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
         if (!response.ok) throw new Error('Request failed with status ' + response.status);
+
         let data = null;
         try { data = await response.json(); } catch (_) {}
         const summary = data && (data.summary || data.result || data.output);
-        if (summary) { showResult(name, selectedFile.name, summary); }
-        else { showStatus('Transcript received — waiting for summary from your workflow…'); }
-      } catch (err) { showError('Something went wrong: ' + err.message); submitBtn.disabled = false; }
+
+        if (summary) {
+          showResult(name, summary);
+        } else {
+          showStatus('Transcript received — waiting for summary from your workflow…');
+        }
+      } catch (err) {
+        showError('Something went wrong: ' + err.message);
+        submitBtn.disabled = false;
+      }
     }
-    function showStatus(msg) { document.getElementById('status-card').style.display = 'block'; document.getElementById('status-text').textContent = msg; document.getElementById('error-card').style.display = 'none'; }
-    function showError(msg) { document.getElementById('status-card').style.display = 'none'; document.getElementById('error-card').style.display = 'block'; document.getElementById('error-text').textContent = msg; }
-    function showResult(name, filename, summary) {
+
+    function showStatus(msg) {
+      document.getElementById('status-card').style.display = 'block';
+      document.getElementById('status-text').textContent = msg;
+      document.getElementById('error-card').style.display = 'none';
+    }
+
+    function showError(msg) {
+      document.getElementById('status-card').style.display = 'none';
+      document.getElementById('error-card').style.display = 'block';
+      document.getElementById('error-text').textContent = msg;
+    }
+
+    function showResult(name, summary) {
       document.getElementById('status-card').style.display = 'none';
       document.getElementById('upload-section').style.display = 'none';
       const rs = document.getElementById('result-section');
-      rs.style.display = 'block'; rs.style.animation = 'pagein 0.35s ease both';
-      document.getElementById('result-meta').textContent = name + ' · ' + filename;
+      rs.style.display = 'block';
+      rs.style.animation = 'pagein 0.35s ease both';
+      document.getElementById('result-meta').textContent = name + ' · ' + new Date().toLocaleTimeString();
       document.getElementById('summary-body').textContent = summary;
     }
+
     function resetPortal() {
-      selectedFile = null; fileInput.value = ''; document.getElementById('user-name').value = '';
-      dropZone.classList.remove('has-file'); fileChosenName.textContent = ''; submitBtn.disabled = true;
+      nameInput.value = '';
+      transcriptInput.value = '';
+      charCount.textContent = '0';
+      submitBtn.disabled = true;
       document.getElementById('result-section').style.display = 'none';
       document.getElementById('status-card').style.display = 'none';
       document.getElementById('error-card').style.display = 'none';
       document.getElementById('upload-section').style.display = 'block';
-    }
-    function toBase64(file) {
-      return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = () => rej(new Error('File read failed')); r.readAsDataURL(file); });
     }
   </script>
 </body>
