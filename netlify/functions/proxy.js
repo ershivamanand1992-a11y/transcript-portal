@@ -11,13 +11,17 @@ exports.handler = async function(event) {
     };
   }
 
-  const WEBHOOK = 'https://igniteipa1.nextgen.blueprism.com/regions/us-east/api/workflows/v1/webhooks/JB8H3znP9JwTycSI5kYN6/sync';
+  const WEBHOOK = 'https://igniteipa1.nextgen.blueprism.com/regions/us-east/api/workflows/v1/webhooks/JB8H3znP9JwTycSI5kYN6';
 
   try {
     const response = await fetch(WEBHOOK, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0',
+        'Origin': 'https://stalwart-profiterole-abdfa7.netlify.app',
+        'Referer': 'https://stalwart-profiterole-abdfa7.netlify.app'
       },
       body: event.body
     });
