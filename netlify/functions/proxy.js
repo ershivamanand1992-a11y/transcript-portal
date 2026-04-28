@@ -16,7 +16,10 @@ exports.handler = async function(event) {
   try {
     const response = await fetch(WEBHOOK, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'ignite-secret-123'
+      },
       body: event.body
     });
 
